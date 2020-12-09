@@ -27,10 +27,11 @@ jobs:
       - uses: actions/github-script@v3
         with:
           script: |
-            console.log(JSON.stringify(context))
+            // console.log(JSON.stringify(context))
 
             github.repos.createDeployment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: context.ref
+              ref: context.ref,
+              required_contexts: []
             })
