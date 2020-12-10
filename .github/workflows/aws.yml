@@ -27,6 +27,9 @@ on:
   push:
     branches: 
       - main
+  pull_request:
+    branches: 
+      - main
 
 name: Deploy to Amazon ECS
 
@@ -69,13 +72,13 @@ jobs:
       id: deployment-id
       with:
         script: |
-          // console.log(JSON.stringify(context))
+          console.log(JSON.stringify(context))
           
           const deployment = await github.repos.createDeployment({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            ref: context.ref,
-            environment: 'production',
+            ref: context.payload.pull_request.head.ref,
+            environment: context.eventName == 'pull_request' ? 'staging' : 'production',
             required_contexts: []
           })
           
@@ -92,8 +95,9 @@ jobs:
             repo: context.repo.repo,
             deployment_id: ${{ steps.deployment-id.outputs.result }},
             state: 'in_progress',
+            log_url: 'http://ec2co-ecsel-tboyn72mjb5t-2101294819.eu-central-1.elb.amazonaws.com/',
             mediaType: {
-              previews: ["flash-preview"]
+              previews: ["flash-preview", "ant-man-preview"]
             }
           })
 
@@ -123,7 +127,11 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             deployment_id: ${{ steps.deployment-id.outputs.result }},
-            state: 'success'
+            log_url: 'http://ec2co-ecsel-tboyn72mjb5t-2101294819.eu-central-1.elb.amazonaws.com/',
+            state: 'success',
+            mediaType: {
+              previews: ["ant-man-preview"]
+            }
           })
           
     - name: Mark deployment as failed
