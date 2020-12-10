@@ -63,6 +63,32 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        
+    - uses: actions/github-script@v3
+      id: deployment-id
+      with:
+        script: |
+          // console.log(JSON.stringify(context))
+          await { data } = github.repos.createDeployment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: context.ref,
+            environment: 'production',
+            required_contexts: []
+          })
+          
+          return data.id
+          
+    - uses: actions/github-script@v3
+      with:
+        script: |
+          // console.log(JSON.stringify(context))
+          github.repos.createDeploymentStatus({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            deployment_id: ${{ steps.deployment-id.outputs.result }},
+            state: 'in_progress'
+          })
 
     - name: Fill in the new image ID in the Amazon ECS task definition
       id: task-def
@@ -80,3 +106,27 @@ jobs:
         service: sample-app-test-2-service
         cluster: default-test-2
         wait-for-service-stability: true
+        
+    - uses: actions/github-script@v3
+      if: success()
+      with:
+        script: |
+          // console.log(JSON.stringify(context))
+          github.repos.createDeploymentStatus({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            deployment_id: ${{ steps.deployment-id.outputs.result }},
+            state: 'success'
+          })
+          
+    - uses: actions/github-script@v3
+      if: failure()
+      with:
+        script: |
+          // console.log(JSON.stringify(context))
+          github.repos.createDeploymentStatus({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            deployment_id: ${{ steps.deployment-id.outputs.result }},
+            state: 'failure'
+          })
