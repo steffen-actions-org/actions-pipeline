@@ -77,7 +77,7 @@ jobs:
           const deployment = await github.repos.createDeployment({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            ref: context.ref,
+            ref: context.payload.pull_request.head.ref,
             environment: context.eventName == 'pull_request' ? 'staging' : 'production',
             required_contexts: []
           })
@@ -95,6 +95,7 @@ jobs:
             repo: context.repo.repo,
             deployment_id: ${{ steps.deployment-id.outputs.result }},
             state: 'in_progress',
+            log_url: 'http://ec2co-ecsel-tboyn72mjb5t-2101294819.eu-central-1.elb.amazonaws.com/',
             mediaType: {
               previews: ["flash-preview"]
             }
@@ -126,6 +127,7 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             deployment_id: ${{ steps.deployment-id.outputs.result }},
+            log_url: 'http://ec2co-ecsel-tboyn72mjb5t-2101294819.eu-central-1.elb.amazonaws.com/',
             state: 'success'
           })
           
