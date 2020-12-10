@@ -96,6 +96,9 @@ jobs:
             environment = 'production'
           }
           
+          console.log('ref', ref)
+          console.log('environment', environment)
+          
           const deployment = await github.repos.createDeployment({
             owner: context.repo.owner,
             repo: context.repo.repo,
@@ -104,7 +107,7 @@ jobs:
             required_contexts: []
           })
           
-          // console.log(deployment)
+          console.log('deployment', deployment)
           
           return deployment.data.id
           
