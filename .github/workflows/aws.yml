@@ -75,12 +75,32 @@ jobs:
       with:
         script: |
           console.log(JSON.stringify(context))
+          console.log('issue number', context.payload.issue.number)
+          
+          let ref
+          let environment
+          
+          if (context.eventName === 'issue_comment' && context.payload.comment.body === '/deploy-to-staging') {
+            const pullResponse = await github.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.issue.number
+            });
+            
+            console.log(JSON.stringify(pullResponse))
+            
+            ref = pullResponse.data.head.ref
+            environment = 'staging'
+          } else {
+            ref = context.payload.pull_request.head.ref
+            environment = 'production'
+          }
           
           const deployment = await github.repos.createDeployment({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            ref: context.payload.pull_request.head.ref,
-            environment: context.eventName === 'issue_comment' && context.payload.comment.body === '/deploy-to-staging' ? 'staging' : 'production',
+            ref,
+            environment,
             required_contexts: []
           })
           
