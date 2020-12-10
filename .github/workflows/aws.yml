@@ -89,7 +89,7 @@ jobs:
             
             console.log(JSON.stringify(pullResponse))
             
-            ref = pullResponse.data.pullRequest.head.ref
+            ref = pullResponse.data.head.ref
             environment = 'staging'
           } else {
             ref = context.payload.pull_request.head.ref
