@@ -27,6 +27,9 @@ on:
   push:
     branches: 
       - main
+  pull_request:
+    branches: 
+      - main
 
 name: Deploy to Amazon ECS
 
@@ -69,13 +72,13 @@ jobs:
       id: deployment-id
       with:
         script: |
-          // console.log(JSON.stringify(context))
+          console.log(JSON.stringify(context))
           
           const deployment = await github.repos.createDeployment({
             owner: context.repo.owner,
             repo: context.repo.repo,
             ref: context.ref,
-            environment: 'production',
+            environment: context.event_name == 'pull_request' ? 'staging' : 'production',
             required_contexts: []
           })
           
