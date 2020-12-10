@@ -64,11 +64,13 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
         
-    - uses: actions/github-script@v3
+    - name: Create deployment
+      uses: actions/github-script@v3
       id: deployment-id
       with:
         script: |
           // console.log(JSON.stringify(context))
+          
           const deployment = await github.repos.createDeployment({
             owner: context.repo.owner,
             repo: context.repo.repo,
@@ -77,19 +79,22 @@ jobs:
             required_contexts: []
           })
           
-          console.log(deployment)
+          // console.log(deployment)
           
           return deployment.data.id
           
-    - uses: actions/github-script@v3
+    - name: Mark deployment as "in progress"
+      uses: actions/github-script@v3
       with:
         script: |
-          // console.log(JSON.stringify(context))
           github.repos.createDeploymentStatus({
             owner: context.repo.owner,
             repo: context.repo.repo,
             deployment_id: ${{ steps.deployment-id.outputs.result }},
-            state: 'in_progress'
+            state: 'in_progress',
+            mediaType: {
+              previews: ["flash-preview"]
+            }
           })
 
     - name: Fill in the new image ID in the Amazon ECS task definition
@@ -109,11 +114,11 @@ jobs:
         cluster: default-test-2
         wait-for-service-stability: true
         
-    - uses: actions/github-script@v3
+    - name: Mark deployment as succeeded
+      uses: actions/github-script@v3
       if: success()
       with:
         script: |
-          // console.log(JSON.stringify(context))
           github.repos.createDeploymentStatus({
             owner: context.repo.owner,
             repo: context.repo.repo,
@@ -121,11 +126,11 @@ jobs:
             state: 'success'
           })
           
-    - uses: actions/github-script@v3
+    - name: Mark deployment as failed
+      uses: actions/github-script@v3
       if: failure()
       with:
         script: |
-          // console.log(JSON.stringify(context))
           github.repos.createDeploymentStatus({
             owner: context.repo.owner,
             repo: context.repo.repo,
