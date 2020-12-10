@@ -78,7 +78,7 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             ref: context.ref,
-            environment: context.event_name == 'pull_request' ? 'staging' : 'production',
+            environment: context.eventName == 'pull_request' ? 'staging' : 'production',
             required_contexts: []
           })
           
