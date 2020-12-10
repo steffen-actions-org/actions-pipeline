@@ -97,7 +97,7 @@ jobs:
             state: 'in_progress',
             log_url: 'http://ec2co-ecsel-tboyn72mjb5t-2101294819.eu-central-1.elb.amazonaws.com/',
             mediaType: {
-              previews: ["flash-preview"]
+              previews: ["flash-preview", "ant-man-preview"]
             }
           })
 
@@ -128,7 +128,10 @@ jobs:
             repo: context.repo.repo,
             deployment_id: ${{ steps.deployment-id.outputs.result }},
             log_url: 'http://ec2co-ecsel-tboyn72mjb5t-2101294819.eu-central-1.elb.amazonaws.com/',
-            state: 'success'
+            state: 'success',
+            mediaType: {
+              previews: ["ant-man-preview"]
+            }
           })
           
     - name: Mark deployment as failed
