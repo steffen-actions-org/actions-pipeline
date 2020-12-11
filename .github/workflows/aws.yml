@@ -104,6 +104,7 @@ jobs:
             repo: context.repo.repo,
             ref,
             environment,
+            auto_merge: false,
             required_contexts: []
           })
           
