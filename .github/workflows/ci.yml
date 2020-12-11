@@ -33,7 +33,13 @@ jobs:
     - name: Install dependencies
       run: npm i
 
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+
     - name: Run percy tests
       run: npx percy exec -- node snapshots.js
       env:
         PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+        PERCY_BRANCH: ${{ github.ref }}
