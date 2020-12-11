@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches: 
+      - main
+  pull_request:
+    branches: 
+      - main
+
+jobs:
+  visual-tests:
+    name: Visual tests
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Run percy tests
+      run: npx percy exec -- node snapshots.js
+      env:
+        PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
