@@ -1,0 +1,22 @@
+{
+  "name": "actions-pipeline",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/steffen-actions-org/actions-pipeline.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/steffen-actions-org/actions-pipeline/issues"
+  },
+  "homepage": "https://github.com/steffen-actions-org/actions-pipeline#readme",
+  "devDependencies": {
+    "@percy/script": "^1.1.0"
+  }
+}
