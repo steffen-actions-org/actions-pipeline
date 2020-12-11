@@ -73,7 +73,7 @@ jobs:
       with:
         script: |
           console.log(JSON.stringify(context))
-          console.log('issue number', context.payload.issue.number)
+          // console.log('issue number', context.payload.issue.number)
           
           let ref
           let environment
